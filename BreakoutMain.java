@@ -86,6 +86,10 @@ class Define{
   public static final int BLOCK_WIDTH = 50;
   public static final int BLOCK_HEIGHT = 10;
 
+  /*配置するブロックの個数*/
+  public static final int BLOCK_MAP_INDEX_X = 6;
+  public static final int BLOCK_MAP_INDEX_Y = 6;
+  public static final int MAX_BLOCK = 36;
 }
 
 class BreakoutThread extends AnimationTimer{
@@ -94,7 +98,8 @@ class BreakoutThread extends AnimationTimer{
 	private Ball ball;
 	private Bar bar;
 	private Field field;
-  private Blocks block;
+  private Blocks blocks[] = new Blocks[Define.MAX_BLOCK];
+  private BlockMap blockmap;
 	private CollisionDetection cd;
 	private GameOver gameover;
 	private int game_state;
@@ -106,10 +111,13 @@ class BreakoutThread extends AnimationTimer{
 		gc.setFont(theFont);
 		ball = new Ball();
 		field = new Field();
-    block = new Blocks();
+    for(int i = 0; i < Define.MAX_BLOCK; i++){
+      blocks[i] = new Blocks();
+    }
 		gameover = new GameOver();
+    blockmap = new BlockMap(blocks);
 		bar = new Bar(field,key);
-		cd = new CollisionDetection(this, ball, bar, field, block);
+		cd = new CollisionDetection(this, ball, bar, blocks, field);
 		game_state = 0;
 	}
 
@@ -123,6 +131,7 @@ class BreakoutThread extends AnimationTimer{
 
 		switch(game_state){
 		  case 0:
+        blockmap.init();
 			  game_state = 5;
 			  break;
 		  case 5:
@@ -131,13 +140,17 @@ class BreakoutThread extends AnimationTimer{
 			  cd.move();
 			  ball.draw(gc);
 			  bar.draw(gc);
-        block.draw(gc);
+        for(int i = 0; i < Define.MAX_BLOCK; i++){
+				  blocks[i].draw(gc);
+			  }
 			  field.draw(gc);
 			  break;
 		  case 10:
 			  bar.draw(gc);
 			  field.draw(gc);
-        block.draw(gc);
+        for(int i = 0; i < Define.MAX_BLOCK; i++){
+				  blocks[i].draw(gc);
+			  }
 			  gameover.draw(gc);
 			  break;
 		  default:
@@ -280,14 +293,14 @@ class CollisionDetection{
   private BreakoutThread breakoutThread;
   private Ball ball;
   private Bar bar;
-  private Blocks block;
+  private Blocks blocks[];
   private Field field;
 
-  CollisionDetection(BreakoutThread breakoutThread, Ball ball, Bar bar, Field field, Blocks block){
+  CollisionDetection(BreakoutThread breakoutThread, Ball ball, Bar bar, Blocks blocks[],Field field){
     this.breakoutThread = breakoutThread;
     this.ball = ball;
     this.bar = bar;
-    this.block = block;
+    this.blocks = blocks;
     this.field = field;
   }
 
@@ -312,6 +325,7 @@ class CollisionDetection{
   		ball.set_y(ball.get_y() - ball.get_r());
     	ball.ch_y_speed();
   	}
+    /*
     if(block.get_flag()){
     	if(ball.get_x() >= block.get_x() && ball.get_x() <= block.get_x() + block.get_width()){
     		if(ball.get_y() >= block.get_y() && ball.get_y() <= block.get_y() + 3){
@@ -338,6 +352,7 @@ class CollisionDetection{
     		}
     	}
     }
+    */
 	}
 }
 
@@ -433,8 +448,56 @@ class Blocks extends Base{
 
   void draw(GraphicsContext gc){
     if(flag){
-      gc.setFill(Color.GREEN);
+      switch(color){
+        case 0:
+          break;
+        case 1:
+          gc.setFill(Color.RED);
+          break;
+        case 2:
+          gc.setFill(Color.GREEN);
+          break;
+        case 3:
+          gc.setFill(Color.BLUE);
+          break;
+        default:
+          break;
+      }
       gc.fillRect(Define.X_POSI + x, y, width, height);
+      gc.setStroke(Color.WHITE);
+      gc.strokeRect(Define.X_POSI + x, y, width, height);
+    }
+  }
+}
+
+class BlockMap{
+  private Blocks blocks[];
+
+  private final int block_map[][] = {
+    {1, 2, 3, 1, 2, 3},
+    {2, 3, 1, 2, 3, 1},
+    {3, 1, 2, 3, 1, 2},
+    {1, 2, 3, 1, 2, 3},
+    {2, 3, 1, 2, 3, 1},
+    {3, 1, 2, 3, 1, 2}
+  };
+
+  BlockMap(Blocks blocks[]){
+    this.blocks = blocks;
+  }
+
+  void init(){
+    int count = 0;
+    for(int i = 0; i < Define.BLOCK_MAP_INDEX_Y; i++){
+      for(int j = 0; j < Define.BLOCK_MAP_INDEX_X; j++){
+        if(block_map[i][j] != 0){
+          blocks[count].set_x(Define.BLOCK_WIDTH * j);
+          blocks[count].set_y(Define.BLOCK_HEIGHT * i);
+          blocks[count].set_flag(true);
+          blocks[count].set_color(block_map[i][j]);
+        }
+        count++;
+      }
     }
   }
 }
