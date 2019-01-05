@@ -60,11 +60,13 @@ class Define{
 
   /*ボールの半径*/
   public static final int BALL_R = 5;
+
   /*ボールのスピード*/
-  public static final int BALL_SPEED = 5;
+  public static final int BALL_SPEED = 3;
 
   /*反射barのスピード*/
   public static final int BAR_SPEED = 5;
+
   /*反射barのサイズ*/
   public static final int BAR_WIDTH = 50;
   public static final int BAR_HEIGHT = 10;
@@ -86,7 +88,7 @@ class Define{
   public static final int BLOCK_WIDTH = 50;
   public static final int BLOCK_HEIGHT = 10;
 
-  /*配置するブロックの個数*/
+  /*表示ブロックの個数等の定義*/
   public static final int BLOCK_MAP_INDEX_X = 6;
   public static final int BLOCK_MAP_INDEX_Y = 6;
   public static final int MAX_BLOCK = 36;
@@ -261,6 +263,7 @@ class Ball extends Base{
 class Bar extends Base{
 	private Field field;
 	private Key key;
+  private Ball ball;
 
 	Bar(Field field,Key key){
 		this.field = field;
@@ -275,7 +278,7 @@ class Bar extends Base{
 	void init(){}
 
 	void move(){
-		if(key.get_right() > 0 && (x + width) < field.get_width()){
+    if(key.get_right() > 0 && (x + width) < field.get_width()){
 			x += x_speed;
 		}
 		if(key.get_left() > 0 && x > 0){
@@ -325,34 +328,34 @@ class CollisionDetection{
   		ball.set_y(ball.get_y() - ball.get_r());
     	ball.ch_y_speed();
   	}
-    /*
-    if(block.get_flag()){
-    	if(ball.get_x() >= block.get_x() && ball.get_x() <= block.get_x() + block.get_width()){
-    		if(ball.get_y() >= block.get_y() && ball.get_y() <= block.get_y() + 3){
-    			ball.set_y(block.get_y());
-    			ball.ch_y_speed();
-    			block.set_flag(false);
+    for(int count = 0; count < Define.MAX_BLOCK; count++){
+      if(blocks[count].get_flag()){
+    	 if(ball.get_x() >= blocks[count].get_x() && ball.get_x() <= blocks[count].get_x() + blocks[count].get_width()){
+    	  if(ball.get_y() >= blocks[count].get_y() && ball.get_y() <= blocks[count].get_y() + 3){
+    	    ball.set_y(blocks[count].get_y());
+    		  ball.ch_y_speed();
+    		  blocks[count].set_flag(false);
     		}
-    		else if(ball.get_y() <= block.get_y() + block.get_height() && ball.get_y() >= block.get_y() + block.get_height() - 3){
-    			ball.set_y(block.get_y() + block.get_height());
-    			ball.ch_y_speed();
-    			block.set_flag(false);
-    		}
-    	}
-    	else if(ball.get_y() >= block.get_y() && ball.get_y() <= block.get_y() + block.get_height()){
-    		if(ball.get_x() >= block.get_x() && ball.get_x() <= block.get_x() + 3){
-    			ball.set_x(block.get_x());
-    			ball.ch_x_speed();
-    			block.set_flag(false);
-    		}
-    		else if(ball.get_x() <= block.get_x() + block.get_width() && ball.get_x() >= block.get_x() + block.get_width() - 3){
-    			ball.set_x(block.get_x() + block.get_width());
-    			ball.ch_x_speed();
-    			block.set_flag(false);
+    		else if(ball.get_y() <= blocks[count].get_y() + blocks[count].get_height() && ball.get_y() >= blocks[count].get_y() + blocks[count].get_height() - 3){
+    		  ball.set_y(blocks[count].get_y() + blocks[count].get_height());
+    		  ball.ch_y_speed();
+    			blocks[count].set_flag(false);
     		}
     	}
+    	else if(ball.get_y() >= blocks[count].get_y() && ball.get_y() <= blocks[count].get_y() + blocks[count].get_height()){
+    		if(ball.get_x() >= blocks[count].get_x() && ball.get_x() <= blocks[count].get_x() + 3){
+    			ball.set_x(blocks[count].get_x());
+    			ball.ch_x_speed();
+    			blocks[count].set_flag(false);
+    		}
+    		else if(ball.get_x() <= blocks[count].get_x() + blocks[count].get_width() && ball.get_x() >= blocks[count].get_x() + blocks[count].get_width() - 3){
+    			ball.set_x(blocks[count].get_x() + blocks[count].get_width());
+    			ball.ch_x_speed();
+    			blocks[count].set_flag(false);
+    		}
+    	}
+     }
     }
-    */
 	}
 }
 
