@@ -8,3 +8,6 @@ BreakOut for JavaFX
 ## How to Compile
 1. javac BreakoutMain.java
 2. java BreakoutMain
+
+## Attention
+Encoding selection is Shift-JIS.
